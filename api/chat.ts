@@ -1,32 +1,28 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 import cors from "cors";
 
-const { gemini } = require("@google/generative-ai");
-const genAI = new gemini(process.env.GEMINI_API_KEY); // 環境変数の確認
-const model = genAI.gemini({ model: "gemini-1.5-flash" });
-
+// corsの設定
 const corsHandler = cors({
   origin: "*", // 任意のオリジンからリクエストを許可
 });
+
+// gemini apiの初期設定
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORSハンドラの適用
   corsHandler(req, res, async () => {
     const { name = "world" } = req.query;
 
-    try {
-      // Google Generative AIを使ってプロンプトから生成したコンテンツを取得
-      const prompt = `hello ${name}`;
-      const result = await model.generateContent(prompt);
-      const generatedText = result.response.text();
-      console.log(generatedText);
+    const prompt = `What are the three color codes associated with ${name}? Your answer should be the color code only.`;
 
-      // 生成したテキストをレスポンスとして返す
-      res.status(200).send(`Generated Text: ${generatedText}`);
+    try {
+      const result = await model.generateContent(prompt);
+      res.send(result.response.text());
     } catch (error) {
-      // エラーハンドリング
-      console.error("Error generating content:", error);
-      res.status(500).send("Error generating content");
+      res.send(error);
     }
   });
 }
