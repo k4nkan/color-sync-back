@@ -14,15 +14,27 @@ const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORSハンドラの適用
   corsHandler(req, res, async () => {
-    const { name = "world" } = req.query;
+    // color setup
+    const { theme = "random", number = "3", density = "50" } = req.query;
 
-    const prompt = `What are the three color codes associated with ${name}? Your answer should be the color code only.`;
+    // プロンプトの設定
+    const prompt = `What are the ${number} color codes associated with ${theme}? Color intensity should be 50(min:0,max:50). Your answer should be the color code only and please sequence the colour codes from closest to black to closest to white. Add the hashtag at the beginning of each color code and delimit with a comma`;
 
     try {
       const result = await model.generateContent(prompt);
-      res.send(result.response.text());
+      res.status(200).send(result.response.text());
     } catch (error) {
-      res.send(error);
+      console.error("error generating content:", error);
+      if (error.response && error.response.status) {
+        res
+          .status(error.response.status)
+          .send({ error: "API Error", details: error.response.data });
+      } else {
+        res.status(500).send({
+          error: "Internal Server Error",
+          message: "An unexpected error occurred.",
+        });
+      }
     }
   });
 }
