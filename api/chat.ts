@@ -18,7 +18,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const { theme = "random", number = "3", density = "50" } = req.query;
 
     // プロンプトの設定
-    const prompt = `What are the ${number} color codes associated with ${theme}? Color intensity should be 50(min:0,max:50). Your answer should be the color code only and please sequence the colour codes from closest to black to closest to white. Add the hashtag at the beginning of each color code and delimit with a comma`;
+    const prompt = `
+    Generate ${number} color codes associated with the theme '${theme}'.
+    The intensity of the colors should be ${density} (min: 0, max: 100).
+    Return the colors as a plain text in the following format:
+    "red1,green1,blue1;red2,green2,blue2;red3,green3,blue3".
+    Do not include any additional text or explanation.
+    `;
 
     try {
       const result = await model.generateContent(prompt);
