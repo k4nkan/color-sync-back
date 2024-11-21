@@ -21,6 +21,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const prompt = `
     Generate ${number} color codes associated with the theme '${theme}'.
     The intensity of the colors should be ${density} (min: 0, max: 100).
+    Please order the colors from closest to black to closest to white.
     Return the colors as a plain text in the following format:
     "red1,green1,blue1;red2,green2,blue2;red3,green3,blue3".
     Do not include any additional text or explanation.
