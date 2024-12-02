@@ -15,12 +15,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORSハンドラの適用
   corsHandler(req, res, async () => {
     // color setup
-    const { theme = "random", number = "3", density = "50" } = req.query;
+    const { theme = "random", density = "50" } = req.query;
 
     // プロンプトの設定
     const prompt = `
-    Generate ${number} color codes associated with the theme '${theme}'.
-    The intensity of the colors should be ${density} (min: 0, max: 100).
+    Generate three colour codes that can be associated with '${theme}'.
+    The intensity of the colors should be ${density} (thin: 0, thick: 100).
     Please order the colors from closest to black to closest to white.
     Return the colors as a plain text in the following format:
     "red1,green1,blue1;red2,green2,blue2;red3,green3,blue3".
